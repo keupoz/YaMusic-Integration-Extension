@@ -1,31 +1,37 @@
 {
     "manifest_version": 2,
+
     "name": "Yandex.Music Extension",
     "short_name": "ya_music_ext",
-    "version": "1.0.0",
+    "version": "0.0.0",
     "author": "keupoz",
     "default_locale": "ru",
     "description": "__MSG_extDesc__",
     "minimum_chrome_version": "73",
+
     "icons": {
-        "16": "./icons/16.png",
-        "32": "./icons/32.png",
-        "48": "./icons/48.png",
-        "128": "./icons/128.png"
+        "16": "icons/16.png",
+        "32": "icons/32.png",
+        "48": "icons/48.png",
+        "128": "icons/128.png"
     },
+
     "browser_action": {
         "default_title": "__MSG_browserActionTitle__"
     },
+
     "background": {
-        "scripts": ["./background.ts"],
+        "scripts": ["background.js"],
         "persistent": false
     },
+
     "content_scripts": [
         {
-            "js": ["./injector.ts"],
+            "js": ["injector.js"],
             "matches": ["https://music.yandex.ru/*"]
         }
     ],
-    "web_accessible_resources": ["./main.ts"],
+
+    "web_accessible_resources": ["main.js"],
     "permissions": ["tabs"]
 }

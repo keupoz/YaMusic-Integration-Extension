@@ -1,4 +1,4 @@
-import { YaTrack } from "./YaMusic.externalAPI";
+import { YaTrack } from "./lib/YaMusic.externalAPI";
 
 if (navigator.mediaSession === undefined) throw new Error("MediaSession API isn't supported by your browser");
 
