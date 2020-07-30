@@ -1,0 +1,20 @@
+{
+    "rules": {
+        "no-default-export": true,
+        "no-string-throw": true,
+        "prefer-const": true,
+        "prefer-readonly": true,
+        "prefer-template": true,
+        "quotemark": true,
+        "semicolon": true
+    },
+    "jsRules": {
+        "no-default-export": true,
+        "no-string-throw": true,
+        "prefer-const": true,
+        "prefer-readonly": true,
+        "prefer-template": true,
+        "quotemark": true,
+        "semicolon": true
+    }
+}

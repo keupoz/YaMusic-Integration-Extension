@@ -1,0 +1,29 @@
+{
+    "name": "ya-music-ext",
+    "version": "1.0.0",
+    "description": "Yandex.Music Extension source package",
+    "private": true,
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "rm -rf dist && parcel src/manifest.json --no-hmr",
+        "build": "rm -rf dist && parcel build src/manifest.json --experimental-scope-hoisting && cd dist && zip -r9 -FS ../YaMusic.zip *"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/keupoz/YaMusic-Integration-Extension.git"
+    },
+    "author": "keupoz",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/keupoz/YaMusic-Integration-Extension/issues"
+    },
+    "homepage": "https://github.com/keupoz/YaMusic-Integration-Extension#readme",
+    "devDependencies": {
+        "@types/chrome": "0.0.93",
+        "@types/wicg-mediasession": "^1.0.3",
+        "parcel-bundler": "^1.12.4",
+        "parcel-plugin-web-extension": "^1.6.1",
+        "typescript": "^3.7.5"
+    },
+    "dependencies": {}
+}
