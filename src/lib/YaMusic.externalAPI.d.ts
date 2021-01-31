@@ -1,60 +1,69 @@
 /**
+ * Cover URL without protocol
+ *
+ * ```javascript
+ * const Cover = "avatars.yandex.net/get-music-content/2399641/1d2a9b69.p.42004/%%";
+ * ```
+ */
+export type CoverInfo = string;
+
+/**
  * Yandex.Music artist object
  *
  * ```javascript
- * const YaArtistExample = {
+ * const Artist = {
  *   title: "Hollywood Undead",
  *   cover: "avatars.yandex.net/get-music-content/2399641/1d2a9b69.p.42004/%%",
  *   link: "/artist/42004"
  * };
  * ```
 **/
-export type YaArtist = {
+export type ArtistInfo = {
     /** Artist name */
     title: string,
 
-    /** Cover URL without protocol */
-    cover: string,
-
     /** Link to the artist page without domain */
-    link: string
+    link: string,
+
+    /** Cover URL without protocol */
+    cover: CoverInfo
 };
 
 /**
  * Yandex.Music album object
  *
  * ```javascript
- * const YaAlbumExample = {
+ * const Album = {
  *   title: "Empire",
  *   year: 2020,
  *   cover: "/album/9582015/track/61434766",
  *   link: "/album/9582015",
- *   artists: [YaArtistExample]
+ *   artists: [Artist]
  * };
  * ```
 **/
-export type YaAlbum = {
+export type AlbumInfo = {
     /** Album title */
     title: string,
 
     /** Release date */
     year: number,
 
-    /** Cover URL without protocol */
-    cover: string,
-
     /** Link to the album page without domain */
     link: string,
 
     /** List of artists */
-    artists: YaArtist[]
+    artists: ArtistInfo[],
+
+    /** Cover URL without protocol */
+    cover?: CoverInfo
 };
 
 /**
  * Yandex.Music track object
  *
  * ```javascript
- * const YaTrackExample = {
+ * const Track = {
  *   title: "Empire",
  *   version: undefined,
  *   cover: "avatars.yandex.net/get-music-content/2390047/589e7ea5.a.9582015-1/%%",
@@ -62,20 +71,17 @@ export type YaAlbum = {
  *   liked: false,
  *   disliked: false,
  *   link: "/album/9582015/track/61434766",
- *   album: YaAlbumExample,
- *   artists: [YaArtistExample]
+ *   album: Album,
+ *   artists: [Artist]
  * };
  * ```
 **/
-export type YaTrack = {
+export type TrackInfo = {
     /** Track title */
     title: string,
 
-    /** Track version */
-    version: number,
-
-    /** Cover URL without protocol */
-    cover: string,
+    /** Link to the track page without domain */
+    link: string,
 
     /** Track duration in seconds */
     duration: number,
@@ -86,21 +92,24 @@ export type YaTrack = {
     /** Is track disliked by user */
     disliked: boolean,
 
-    /** Link to the track page without domain */
-    link: string,
+    /** List of artists */
+    artists: ArtistInfo[],
+
+    /** Track version */
+    version?: string,
 
     /** Track album */
-    album: YaAlbum,
+    album?: AlbumInfo,
 
-    /** List of artists */
-    artists: YaArtist[]
+    /** Cover URL without protocol */
+    cover?: CoverInfo
 };
 
 /**
  * Yandex.Music playlist object
  *
  * ```javascript
- * const YaPlaylist = {
+ * const Playlist = {
  *   title: "Playlist of the day",
  *   owner: "yamusic-daily"
  *   cover: "avatars.yandex.net/get-music-user-playlist/38125/q0ahkhfQE3neTk/%%?1572609906461",
@@ -109,7 +118,7 @@ export type YaTrack = {
  * };
  * ```
 **/
-export type YaPlaylist = {
+export type PlaylistInfo = {
     /** Playlist title */
     title: string,
 
@@ -120,24 +129,42 @@ export type YaPlaylist = {
     link: string,
 
     /** Cover URL without protocol */
-    cover: string,
-
-    /** Playing source type */
-    type: "playlist"
+    cover?: CoverInfo
 };
 
-export type YaProgress = {
-    /** Current playing position */
-    position: number,
+/**
+ * Yandex.Music playlist object
+ *
+ * ```javascript
+ * const Source = {
+ *   title: "Playlist of the day",
+ *   owner: "yamusic-daily"
+ *   cover: "avatars.yandex.net/get-music-user-playlist/38125/q0ahkhfQE3neTk/%%?1572609906461",
+ *   link: "/users/yamusic-daily/113122042",
+ *   type: "playlist"
+ * };
+ * ```
+**/
+export type SourceInfo = PlaylistInfo & {
+    /** Playlist owner name */
+    owner?: string,
 
+    /** Playing source type */
+    type: string
+};
+
+export type ProgressInfo = {
     /** Current track duration */
     duration: number,
 
     /** Duration of loaded part */
-    loaded: number
+    loaded: number,
+
+    /** Current playing position */
+    position: number
 };
 
-export enum YaEvents {
+export enum Events {
     /** Current interface is ready */
     EVENT_READY = "ready",
 
@@ -169,22 +196,22 @@ export enum YaEvents {
     EVENT_PROGRESS = "progress"
 }
 
-export type YaControlState = boolean | null;
-export type YaShuffleState = boolean;
-export type YaRepeatState = boolean | 1;
+export type ControlState = boolean | null;
+export type ShuffleState = boolean;
+export type RepeatState = boolean | 1;
 
-export type YaControls = {
-    index: YaControlState,
-    next: YaControlState,
-    prev: YaControlState,
-    shuffle: YaControlState,
-    repeat: YaControlState,
-    like: YaControlState,
-    dislike: YaControlState
+export type Controls = {
+    index: ControlState,
+    next: ControlState,
+    prev: ControlState,
+    shuffle: ControlState,
+    repeat: ControlState,
+    like: ControlState,
+    dislike: ControlState
 };
 
 declare global {
-    const externalAPI: typeof YaEvents & {
+    const externalAPI: typeof Events & {
         SHUFFLE_ON: true,
         SHUFFLE_OFF: false,
 
@@ -197,29 +224,29 @@ declare global {
         CONTROL_DENIED: null,
 
         /** Print help message in console */
-        help: () => void,
+        help(): void,
 
         /** Add event listener */
-        on: (eventType: YaEvents, fn: (...data: any[]) => void) => void,
+        on(eventType: Events, fn: (...data: any[]) => void): void,
 
         /** Remove event listener */
-        off: (eventType: YaEvents, fn: (...data: any[]) => void) => void,
+        off(eventType: Events, fn: (...data: any[]) => void): void,
 
         /** Trigger event. Just calls listener for specified event */
-        trigger: (eventType: YaEvents, ...data: any[]) => void,
+        trigger(eventType: Events, ...data: any[]): void,
 
-        getCurrentTrack: () => YaTrack,
-        getNextTrack: () => YaTrack,
-        getPrevTrack: () => YaTrack,
+        getCurrentTrack(): TrackInfo,
+        getNextTrack(): TrackInfo,
+        getPrevTrack(): TrackInfo,
 
         /** Get current tracks list */
-        getTracksList: () => YaTrack[],
+        getTracksList(): TrackInfo[],
 
         /** Get current track index in tracks list */
-        getTrackIndex: () => number,
+        getTrackIndex(): number,
 
-        /** Get current playlist info */
-        getSourceInfo: () => YaPlaylist,
+        /** Get current source info */
+        getSourceInfo(): SourceInfo,
 
         /**
          * Load tracks data into current tracks list
@@ -227,28 +254,28 @@ declare global {
          * @param ordered Load tracks in order of playing instead of order by list index
          * @returns Promise with value representing success of the operation
          */
-        populate: (fromIndex: number, after?: number, before?: number, ordered?: boolean) => Promise<boolean>,
+        populate(fromIndex: number, after?: number, before?: number, ordered?: boolean): Promise<boolean>,
 
         /** Is player ready and not paused */
-        isPlaying: () => boolean,
+        isPlaying(): boolean,
 
         /** Get player controls info */
-        getControls: () => YaControls,
+        getControls(): Controls,
 
         /** Get shuffle state (`SHUFFLE_ON`/`SHUFFLE_OFF`) */
-        getShuffle: () => YaShuffleState,
+        getShuffle(): ShuffleState,
 
         /** Get repeat state (`REPEAT_ONE`/`REPEAT_ALL`/`REPEAT_NONE`) */
-        getRepeat: () => YaRepeatState,
+        getRepeat(): RepeatState,
 
         /** Get playback volume */
-        getVolume: () => number,
+        getVolume(): number,
 
         /** Get playback speed */
-        getSpeed: () => number,
+        getSpeed(): number,
 
         /** Get progress info */
-        getProgress: () => YaProgress,
+        getProgress(): ProgressInfo,
 
         /**
          * Play selected track.
@@ -258,42 +285,42 @@ declare global {
          * @param index Select a track to play by index of current tracks list
          * @returns Promise with value representing success of the operation
          */
-        play: (index?: number) => Promise<boolean>,
+        play(index?: number): Promise<boolean>,
 
         /**
          * Play next track
          *
          * @returns Promise with value representing success of the operation
          */
-        next: () => Promise<boolean>,
+        next(): Promise<boolean>,
 
         /**
          * Play previous track
          *
          * @returns Promise with value representing success of the operation
          */
-        prev: () => Promise<boolean>,
+        prev(): Promise<boolean>,
 
         /**
          * Toggle pause
          *
          * @param state Specify pause state
          */
-        togglePause: (state?: boolean) => void,
+        togglePause(state?: boolean): void,
 
         /**
          * Add current track to favorites/remove it from favorites
          *
          * @returns Promise with value representing success of the operation
          */
-        toggleLike: () => Promise<boolean>,
+        toggleLike(): Promise<boolean>,
 
         /**
          * Add current track to blacklist/remove it from blacklist
          *
          * @returns Promise with value representing success of the operation
          */
-        toggleDislike: () => Promise<boolean>,
+        toggleDislike(): Promise<boolean>,
 
         /**
          * Toggle shuffle
@@ -301,7 +328,7 @@ declare global {
          * @param state Specify shuffle state (`SHUFFLE_ON`/`SHUFFLE_OFF`)
          * @returns New shuffle state
          */
-        toggleShuffle: (state?: YaShuffleState) => YaShuffleState,
+        toggleShuffle(state?: ShuffleState): ShuffleState,
 
         /**
          * Toggle repeat
@@ -309,16 +336,16 @@ declare global {
          * @param state Specify repeat state (`REPEAT_ONE`/`REPEAT_ALL`/`REPEAT_NONE`)
          * @returns New repeat state
          */
-        toggleRepeat: (state?: YaRepeatState) => YaRepeatState,
+        toggleRepeat(state?: RepeatState): RepeatState,
 
         /** Set playback volume */
-        setVolume: (value: number) => void,
+        setVolume(value: number): void,
 
         /** Set playback speed */
-        setSpeed: (value: number) => void,
+        setSpeed(value: number): void,
 
         /** Toggle mute */
-        toggleMute: (state?: boolean) => void,
+        toggleMute(state?: boolean): void,
 
         /**
          * Set playback position
@@ -326,7 +353,7 @@ declare global {
          * @param value Position in seconds
          * @returns The position that was actually set
          */
-        setPosition: (value: number) => number,
+        setPosition(value: number): number,
 
         /**
          * Navigate to specified URL. URL can be obtained from playlist, artist, album or track objects
@@ -334,6 +361,6 @@ declare global {
          * @param url URL to navigate to without protocol and domain
          * @returns Success of the operation. If page doesn't exist, still returns `true`
          */
-        navigate: (url: string) => boolean
+        navigate(url: string): boolean
     }
 }
