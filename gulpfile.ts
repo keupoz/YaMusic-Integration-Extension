@@ -1,9 +1,10 @@
+import typescript from "@rollup/plugin-typescript";
 import del from "del";
+import glob from "glob";
 import { dest, lastRun, parallel, series, src, task, watch } from "gulp";
-import gulpIf from "gulp-if";
-import terser from "gulp-terser";
-import { createProject } from "gulp-typescript";
 import zip from "gulp-zip";
+import { rollup, RollupCache } from "rollup";
+import { terser } from "rollup-plugin-terser";
 import { json } from "./json-minify";
 import { version } from "./package.json";
 
@@ -27,18 +28,29 @@ task("locales", () => {
         .pipe(dest("dist/_locales"));
 });
 
-task("icons", () => {
-    return src("src/icons/**/*", { since: lastRun("icons") })
-        .pipe(dest("dist/icons"));
+task("assets", () => {
+    return src("src/assets/**/*", { since: lastRun("assets") })
+        .pipe(dest("dist/assets"));
 });
 
-const tsProject = createProject("tsconfig.json");
+let rollupCache: RollupCache;
 
-task("typescript", () => {
-    return src("src/*.ts", { since: lastRun("typescript") })
-        .pipe(tsProject())
-        .pipe(gulpIf(isProduction, terser()))
-        .pipe(dest("dist"));
+task("typescript", async () => {
+    const bundle = await rollup({
+        input: glob.sync("src/*.ts"),
+        cache: rollupCache,
+        plugins: [
+            typescript()
+        ].concat(isProduction ? [terser()] : [])
+    });
+
+    if (bundle.cache) rollupCache = bundle.cache;
+
+    await bundle.write({
+        dir: "dist",
+        format: "es",
+        sourcemap: false
+    });
 });
 
 task("zip", () => {
@@ -47,28 +59,26 @@ task("zip", () => {
         .pipe(dest("."));
 });
 
-task("watch", () => {
+task("watch", async () => {
     watch("src/manifest.json", task("manifest"));
     watch("src/_locales/**/*.json", task("locales"));
-    watch("src/icons/**/*", task("icons"));
+    watch("src/assets/**/*", task("assets"));
     watch("src/**/*.ts", task("typescript"));
+
+    console.log("Watching files ...");
 });
 
-task("build:pre", (done) => {
+task("build:pre", async () => {
     process.env.NODE_ENV = "production";
     isProduction = true;
-
-    done();
 });
 
-task("dev:pre", (done) => {
+task("dev:pre", async () => {
     process.env.NODE_ENV = "development";
     isProduction = false;
-
-    done();
 });
 
-const common = parallel("manifest", "locales", "icons", "typescript");
+const common = parallel("manifest", "locales", "assets", "typescript");
 
 export const build = series("build:pre", "clean", common, "zip");
 export const dev = series("dev:pre", "clean", common, "watch");
