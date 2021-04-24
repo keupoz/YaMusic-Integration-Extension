@@ -1,4 +1,4 @@
-function initMediaSessionActions(mediaSession: MediaSession) {
+export function initMediaSessionActions(mediaSession: MediaSession) {
     mediaSession.setActionHandler("play", () => externalAPI.togglePause(false));
     mediaSession.setActionHandler("pause", () => externalAPI.togglePause(true));
     mediaSession.setActionHandler("previoustrack", () => externalAPI.prev());

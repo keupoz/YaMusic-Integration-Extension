@@ -1,4 +1,5 @@
 import { initExternalAPI } from "./lib/externalAPI";
+import { initMediaSessionActions } from "./lib/mediaSession";
 import { initNotifications } from "./lib/notifications";
 
 if (navigator.mediaSession === undefined) {
