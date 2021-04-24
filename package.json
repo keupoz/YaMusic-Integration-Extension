@@ -19,25 +19,24 @@
     },
     "homepage": "https://github.com/keupoz/YaMusic-Integration-Extension#readme",
     "devDependencies": {
-        "@rollup/plugin-typescript": "^8.1.1",
-        "@types/chrome": "0.0.122",
+        "@rollup/plugin-typescript": "^8.2.1",
+        "@types/chrome": "^0.0.135",
         "@types/gulp": "^4.0.8",
         "@types/gulp-zip": "^4.0.1",
         "@types/through2": "^2.0.36",
         "@types/vinyl": "^2.0.4",
         "@types/wicg-mediasession": "^1.1.0",
-        "del": "^5.1.0",
+        "del": "^6.0.0",
         "glob": "^7.1.6",
         "gulp": "^4.0.2",
         "gulp-if": "^3.0.0",
-        "gulp-zip": "^5.0.2",
+        "gulp-zip": "^5.1.0",
         "plugin-error": "^1.0.1",
-        "rollup": "^2.38.1",
+        "rollup": "^2.45.2",
         "rollup-plugin-terser": "^7.0.2",
         "through2": "^4.0.2",
-        "ts-node": "^8.10.2",
+        "ts-node": "^9.1.1",
         "tslint": "^6.1.3",
-        "typescript": "^4.1.3"
-    },
-    "dependencies": {}
+        "typescript": "^4.2.4"
+    }
 }
