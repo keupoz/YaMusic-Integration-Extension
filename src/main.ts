@@ -6,39 +6,40 @@ const AVAILABLE_COVERS = [30, 50, 80, 100, 200, 300, 400].map((size) => `${size}
 
 function generateArtwork(url: string): MediaImage[] {
     return AVAILABLE_COVERS.map((size) => ({
-        src: url.replace("%%", size),
-        sizes: size
+        sizes: size,
+        src: url.replace("%%", size)
     }));
 }
 
-let lastNotification: Notification;
+let lastNotification: Notification | null = null;
 
 function updateTrack(track?: TrackInfo): void {
     if (navigator.mediaSession === undefined) throw new Error("MediaSession API isn't supported by your browser");
 
-    if (!track) {
+    if (track === undefined) {
         navigator.mediaSession.metadata = null;
+
         return;
     }
 
-    const title = track.title + (track.version ? ` (${track.version})` : ""),
+    const title = track.title + (track.version !== undefined ? ` (${track.version})` : ""),
         artist = track.artists.map((artist) => artist.title).join(", "),
-        cover = track.cover ? generateArtwork(`https://${track.cover}`) : undefined;
+        cover = track.cover !== undefined ? generateArtwork(`https://${track.cover}`) : undefined;
 
     navigator.mediaSession.metadata = new MediaMetadata({
-        title: title,
-        artist: artist || track.album?.title,
+        title,
         album: track.album?.title,
+        artist: artist === "" ? track.album?.title : artist,
         artwork: cover
     });
 
     if (Notification.permission === "granted") {
-        if (lastNotification) lastNotification.close();
+        if (lastNotification !== null) lastNotification.close();
 
         lastNotification = new Notification(title, {
-            silent: true,
-            body: artist || track.album?.title,
-            icon: cover ? cover[4].src : undefined
+            body: artist === "" ? track.album?.title : artist,
+            icon: cover !== undefined ? cover[4].src : undefined,
+            silent: true
         });
 
         lastNotification.onclick = () => {
@@ -50,7 +51,7 @@ function updateTrack(track?: TrackInfo): void {
 if (Notification.permission === "default") Notification.requestPermission();
 
 window.addEventListener("beforeunload", () => {
-    if (lastNotification) lastNotification.close();
+    if (lastNotification !== null) lastNotification.close();
 });
 
 externalAPI.on(externalAPI.EVENT_TRACK, () => updateTrack(externalAPI.getCurrentTrack()));

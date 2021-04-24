@@ -1,13 +1,18 @@
 chrome.browserAction.onClicked.addListener(() => {
-    chrome.tabs.query({
-        url: "https://music.yandex.ru/*"
-    }, (result) => {
-        if (result.length && typeof result[0].id === "number") {
-            chrome.tabs.update(result[0].id, {
-                active: true
+    chrome.tabs.query({ url: "https://music.yandex.ru/*" }, (result) => {
+        const targetTab = result[0];
+
+        // tslint:disable-next-line: strict-type-predicates
+        if (targetTab === undefined || targetTab.id === undefined) {
+            chrome.tabs.create({
+                url: "https://music.yandex.ru/home"
             });
-        } else chrome.tabs.create({
-            url: "https://music.yandex.ru/home"
+
+            return;
+        }
+
+        chrome.tabs.update(targetTab.id, {
+            active: true
         });
     });
 });
