@@ -4,7 +4,7 @@ export function initMediaSessionActions(mediaSession: MediaSession) {
     mediaSession.setActionHandler("previoustrack", () => externalAPI.prev());
     mediaSession.setActionHandler("nexttrack", () => externalAPI.next());
 
-    const seekTime = 10;
+    const seekTime = 5;
 
     mediaSession.setActionHandler("seekbackward", () => {
         const { position } = externalAPI.getProgress();
