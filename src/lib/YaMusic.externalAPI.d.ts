@@ -17,17 +17,17 @@ export type CoverInfo = string;
  *   link: "/artist/42004"
  * };
  * ```
-**/
-export type ArtistInfo = {
+ */
+export interface ArtistInfo {
     /** Artist name */
-    title: string,
+    title: string;
 
     /** Link to the artist page without domain */
-    link: string,
+    link: string | null;
 
     /** Cover URL without protocol */
-    cover: CoverInfo
-};
+    cover?: CoverInfo;
+}
 
 /**
  * Yandex.Music album object
@@ -41,23 +41,23 @@ export type ArtistInfo = {
  *   artists: [Artist]
  * };
  * ```
-**/
-export type AlbumInfo = {
+ */
+export interface AlbumInfo {
     /** Album title */
-    title: string,
+    title: string;
 
     /** Release date */
-    year: number,
+    year: number;
 
     /** Link to the album page without domain */
-    link: string,
+    link: string | null;
 
     /** List of artists */
-    artists: ArtistInfo[],
+    artists: ArtistInfo[];
 
     /** Cover URL without protocol */
-    cover?: CoverInfo
-};
+    cover?: CoverInfo;
+}
 
 /**
  * Yandex.Music track object
@@ -75,35 +75,35 @@ export type AlbumInfo = {
  *   artists: [Artist]
  * };
  * ```
-**/
-export type TrackInfo = {
+ */
+export interface TrackInfo {
     /** Track title */
-    title: string,
+    title: string;
 
     /** Link to the track page without domain */
-    link: string,
+    link?: string | null;
 
     /** Track duration in seconds */
-    duration: number,
+    duration: number;
 
     /** Is track liked by user */
-    liked: boolean,
+    liked: boolean;
 
     /** Is track disliked by user */
-    disliked: boolean,
+    disliked: boolean;
 
     /** List of artists */
-    artists: ArtistInfo[],
+    artists: ArtistInfo[];
 
     /** Track version */
-    version?: string,
+    version?: string;
 
     /** Track album */
-    album?: AlbumInfo,
+    album?: AlbumInfo | null;
 
     /** Cover URL without protocol */
-    cover?: CoverInfo
-};
+    cover?: CoverInfo;
+}
 
 /**
  * Yandex.Music playlist object
@@ -117,52 +117,68 @@ export type TrackInfo = {
  *   type: "playlist"
  * };
  * ```
-**/
-export type PlaylistInfo = {
+ */
+export interface PlaylistInfo {
     /** Playlist title */
-    title: string,
+    title: string;
 
     /** Playlist owner name */
-    owner: string,
+    owner: string;
 
     /** Link to the playlist page without domain */
-    link: string,
+    link: string;
 
     /** Cover URL without protocol */
-    cover?: CoverInfo
-};
+    cover?: CoverInfo;
+}
 
 /**
- * Yandex.Music playlist object
- *
- * ```javascript
- * const Source = {
- *   title: "Playlist of the day",
- *   owner: "yamusic-daily"
- *   cover: "avatars.yandex.net/get-music-user-playlist/38125/q0ahkhfQE3neTk/%%?1572609906461",
- *   link: "/users/yamusic-daily/113122042",
- *   type: "playlist"
- * };
- * ```
-**/
-export type SourceInfo = PlaylistInfo & {
-    /** Playlist owner name */
-    owner?: string,
+ * Yandex.Music radio object
+ */
+export interface RadioInfo {
+    /** Radio title */
+    title: string;
 
-    /** Playing source type */
-    type: string
-};
+    /** Radio link */
+    link: string;
 
-export type ProgressInfo = {
+    /** Radio cover */
+    cover?: CoverInfo;
+}
+
+/**
+ * Yandex.Music common source object
+ */
+export interface CommonSourceInfo {
+    /** Source title */
+    title: string;
+
+    /** Source link */
+    link: string;
+}
+
+/**
+ * Yandex.Music source object
+ */
+type SourceType = "album" | "artist" | "playlist" | "radio" | "common";
+type SourceWrap<S, T extends SourceType> = S & { type: T; }
+type SourceInfo =
+    SourceWrap<AlbumInfo, "album"> |
+    SourceWrap<ArtistInfo, "artist"> |
+    SourceWrap<PlaylistInfo, "playlist"> |
+    SourceWrap<RadioInfo, "radio"> |
+    SourceWrap<CommonSourceInfo, "common">;
+
+export interface ProgressInfo {
     /** Current track duration */
-    duration: number,
+    duration: number;
 
     /** Duration of loaded part */
-    loaded: number,
+    loaded: number;
 
     /** Current playing position */
-    position: number
-};
+    position: number;
+}
 
 export enum Events {
     /** Current interface is ready */
@@ -176,6 +192,9 @@ export enum Events {
 
     /** Ad is playing */
     EVENT_ADVERT = "advert",
+
+    /** Shot is playing */
+    EVENT_SHOT = "shot",
 
     /** Player controls changed (includes shuffle and repeat state) */
     EVENT_CONTROLS = "controls",
@@ -200,53 +219,53 @@ export type ControlState = boolean | null;
 export type ShuffleState = boolean;
 export type RepeatState = boolean | 1;
 
-export type Controls = {
-    index: ControlState,
-    next: ControlState,
-    prev: ControlState,
-    shuffle: ControlState,
-    repeat: ControlState,
-    like: ControlState,
-    dislike: ControlState
-};
+export interface Controls {
+    index: ControlState;
+    next: ControlState;
+    prev: ControlState;
+    shuffle: ControlState;
+    repeat: ControlState;
+    like: ControlState;
+    dislike: ControlState;
+}
 
 declare global {
     const externalAPI: typeof Events & {
-        SHUFFLE_ON: true,
-        SHUFFLE_OFF: false,
+        SHUFFLE_ON: true;
+        SHUFFLE_OFF: false;
 
-        REPEAT_ONE: 1,
-        REPEAT_ALL: true,
-        REPEAT_NONE: false,
+        REPEAT_ONE: 1;
+        REPEAT_ALL: true;
+        REPEAT_NONE: false;
 
-        CONTROL_ENABLED: true,
-        CONTROL_DISABLED: false,
-        CONTROL_DENIED: null,
+        CONTROL_ENABLED: true;
+        CONTROL_DISABLED: false;
+        CONTROL_DENIED: null;
 
         /** Print help message in console */
-        help(): void,
+        help(): void;
 
         /** Add event listener */
-        on(eventType: Events, fn: (...data: any[]) => void): void,
+        on(eventType: Events, fn: (...data: any[]) => void): void;
 
         /** Remove event listener */
-        off(eventType: Events, fn: (...data: any[]) => void): void,
+        off(eventType: Events, fn: (...data: any[]) => void): void;
 
         /** Trigger event. Just calls listener for specified event */
-        trigger(eventType: Events, ...data: any[]): void,
+        trigger(eventType: Events, ...data: any[]): void;
 
-        getCurrentTrack(): TrackInfo,
-        getNextTrack(): TrackInfo,
-        getPrevTrack(): TrackInfo,
+        getCurrentTrack(): TrackInfo | null;
+        getNextTrack(): TrackInfo | null;
+        getPrevTrack(): TrackInfo | null;
 
         /** Get current tracks list */
-        getTracksList(): TrackInfo[],
+        getTracksList(): TrackInfo[];
 
         /** Get current track index in tracks list */
-        getTrackIndex(): number,
+        getTrackIndex(): number;
 
         /** Get current source info */
-        getSourceInfo(): SourceInfo,
+        getSourceInfo(): SourceInfo;
 
         /**
          * Load tracks data into current tracks list
@@ -254,28 +273,28 @@ declare global {
          * @param ordered Load tracks in order of playing instead of order by list index
          * @returns Promise with value representing success of the operation
          */
-        populate(fromIndex: number, after?: number, before?: number, ordered?: boolean): Promise<boolean>,
+        populate(fromIndex: number, after?: number, before?: number, ordered?: boolean): Promise<boolean>;
 
         /** Is player ready and not paused */
-        isPlaying(): boolean,
+        isPlaying(): boolean;
 
         /** Get player controls info */
-        getControls(): Controls,
+        getControls(): Controls;
 
         /** Get shuffle state (`SHUFFLE_ON`/`SHUFFLE_OFF`) */
-        getShuffle(): ShuffleState,
+        getShuffle(): ShuffleState;
 
         /** Get repeat state (`REPEAT_ONE`/`REPEAT_ALL`/`REPEAT_NONE`) */
-        getRepeat(): RepeatState,
+        getRepeat(): RepeatState;
 
         /** Get playback volume */
-        getVolume(): number,
+        getVolume(): number;
 
         /** Get playback speed */
-        getSpeed(): number,
+        getSpeed(): number;
 
         /** Get progress info */
-        getProgress(): ProgressInfo,
+        getProgress(): ProgressInfo;
 
         /**
          * Play selected track.
@@ -285,42 +304,42 @@ declare global {
          * @param index Select a track to play by index of current tracks list
          * @returns Promise with value representing success of the operation
          */
-        play(index?: number): Promise<boolean>,
+        play(index?: number): Promise<boolean>;
 
         /**
          * Play next track
          *
          * @returns Promise with value representing success of the operation
          */
-        next(): Promise<boolean>,
+        next(): Promise<boolean>;
 
         /**
          * Play previous track
          *
          * @returns Promise with value representing success of the operation
          */
-        prev(): Promise<boolean>,
+        prev(): Promise<boolean>;
 
         /**
          * Toggle pause
          *
          * @param state Specify pause state
          */
-        togglePause(state?: boolean): void,
+        togglePause(state?: boolean): void;
 
         /**
          * Add current track to favorites/remove it from favorites
          *
          * @returns Promise with value representing success of the operation
          */
-        toggleLike(): Promise<boolean>,
+        toggleLike(): Promise<boolean>;
 
         /**
          * Add current track to blacklist/remove it from blacklist
          *
          * @returns Promise with value representing success of the operation
          */
-        toggleDislike(): Promise<boolean>,
+        toggleDislike(): Promise<boolean>;
 
         /**
          * Toggle shuffle
@@ -328,7 +347,7 @@ declare global {
          * @param state Specify shuffle state (`SHUFFLE_ON`/`SHUFFLE_OFF`)
          * @returns New shuffle state
          */
-        toggleShuffle(state?: ShuffleState): ShuffleState,
+        toggleShuffle(state?: ShuffleState): ShuffleState;
 
         /**
          * Toggle repeat
@@ -336,16 +355,16 @@ declare global {
          * @param state Specify repeat state (`REPEAT_ONE`/`REPEAT_ALL`/`REPEAT_NONE`)
          * @returns New repeat state
          */
-        toggleRepeat(state?: RepeatState): RepeatState,
+        toggleRepeat(state?: RepeatState): RepeatState;
 
         /** Set playback volume */
-        setVolume(value: number): void,
+        setVolume(value: number): void;
 
         /** Set playback speed */
-        setSpeed(value: number): void,
+        setSpeed(value: number): void;
 
         /** Toggle mute */
-        toggleMute(state?: boolean): void,
+        toggleMute(state?: boolean): void;
 
         /**
          * Set playback position
@@ -353,7 +372,7 @@ declare global {
          * @param value Position in seconds
          * @returns The position that was actually set
          */
-        setPosition(value: number): number,
+        setPosition(value: number): number;
 
         /**
          * Navigate to specified URL. URL can be obtained from playlist, artist, album or track objects
@@ -361,6 +380,6 @@ declare global {
          * @param url URL to navigate to without protocol and domain
          * @returns Success of the operation. If page doesn't exist, still returns `true`
          */
-        navigate(url: string): boolean
-    }
+        navigate(url: string): boolean;
+    };
 }
