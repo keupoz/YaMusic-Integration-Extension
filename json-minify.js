@@ -1,10 +1,21 @@
-import PluginError from "plugin-error";
-import { obj } from "through2";
-import { isVinyl } from "vinyl";
+// tslint:disable: variable-name
+const PluginError = require("plugin-error"),
+    { obj } = require("through2"),
+    { isVinyl } = require("vinyl");
+// tslint:enable: variable-name
 
 const PLUGIN_NAME = "gulp-json";
 
-export function json(transform?: (json: any) => void) {
+/**
+ * @callback ModifyJson
+ * @param {any} json
+ * @returns {void}
+ */
+
+/**
+ * @param {ModifyJson} [transform]
+ */
+function json(transform) {
     return obj(function (file, encoding, callback) {
         if (!isVinyl(file)) return callback(new PluginError(PLUGIN_NAME, "File is not vinyl"));
 
@@ -27,3 +38,5 @@ export function json(transform?: (json: any) => void) {
         return callback(null, file);
     });
 }
+
+module.exports = { json };

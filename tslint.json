@@ -1,11 +1,3 @@
 {
-    "rules": {
-        "no-default-export": true,
-        "no-string-throw": true,
-        "prefer-const": true,
-        "prefer-readonly": true,
-        "prefer-template": true,
-        "quotemark": true,
-        "semicolon": true
-    }
+    "extends": "@keupoz/typescript-config/tslint.json"
 }

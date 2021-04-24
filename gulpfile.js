@@ -1,16 +1,17 @@
-import typescript from "@rollup/plugin-typescript";
-import del from "del";
-import glob from "glob";
-import { dest, lastRun, parallel, series, src, task, watch } from "gulp";
-import zip from "gulp-zip";
-import { rollup, RollupCache } from "rollup";
-import { terser } from "rollup-plugin-terser";
-import { json } from "./json-minify";
-import { version } from "./package.json";
+const typescript = require("@rollup/plugin-typescript"),
+    del = require("del"),
+    { sync } = require("glob"),
+    { dest, lastRun, parallel, series, src, task, watch } = require("gulp"),
+    zip = require("gulp-zip"),
+    { rollup } = require("rollup"),
+    { terser } = require("rollup-plugin-terser");
+
+const { json } = require("./json-minify"),
+    { version } = require("./package.json");
 
 let isProduction = process.env.NODE_ENV === "production";
 
-task("clean", () => {
+task("clean", async () => {
     return del("dist/*");
 });
 
@@ -33,18 +34,20 @@ task("assets", () => {
         .pipe(dest("dist/assets"));
 });
 
-let rollupCache: RollupCache;
+/** @type {import("rollup").RollupCache} */
+let rollupCache;
 
 task("typescript", async () => {
     const bundle = await rollup({
-        input: glob.sync("src/*.ts"),
         cache: rollupCache,
+        input: sync("src/*.ts"),
         plugins: [
+            // @ts-ignore
             typescript()
         ].concat(isProduction ? [terser()] : [])
     });
 
-    if (bundle.cache) rollupCache = bundle.cache;
+    if (bundle.cache !== undefined) rollupCache = bundle.cache;
 
     await bundle.write({
         dir: "dist",
@@ -78,7 +81,6 @@ task("dev:pre", async () => {
     isProduction = false;
 });
 
-const common = parallel("manifest", "locales", "assets", "typescript");
-
-export const build = series("build:pre", "clean", common, "zip");
-export const dev = series("dev:pre", "clean", common, "watch");
+task("common", parallel("manifest", "locales", "assets", "typescript"));
+task("build", series("build:pre", "clean", "common", "zip"));
+task("dev", series("dev:pre", "clean", "common", "watch"));
