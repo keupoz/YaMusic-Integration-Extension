@@ -19,7 +19,7 @@
     },
     "homepage": "https://github.com/keupoz/YaMusic-Integration-Extension#readme",
     "devDependencies": {
-        "@keupoz/typescript-config": "^1.1.8",
+        "@keupoz/typescript-config": "^1.2.0",
         "@rollup/plugin-typescript": "^8.2.1",
         "@types/chrome": "^0.0.135",
         "@types/gulp": "^4.0.8",
