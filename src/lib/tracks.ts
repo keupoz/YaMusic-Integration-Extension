@@ -38,7 +38,7 @@ export function getArtwork(track: TrackInfo): MediaImage[] | undefined {
 }
 
 export function getIcon(artwork?: MediaImage[]) {
-    if (artwork === undefined) return undefined;
+    if (artwork === undefined || artwork[4] === undefined) return undefined;
 
     return artwork[4].src;
 }
