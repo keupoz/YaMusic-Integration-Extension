@@ -1,64 +1,44 @@
+import { initNotifications, sendNotification } from "./lib/notifications";
+import { getAlbum, getArtist, getArtwork, getIcon, getTitle } from "./lib/tracks";
+import { isNull } from "./lib/utils";
 import { TrackInfo } from "./lib/YaMusic.externalAPI";
 
-if (navigator.mediaSession === undefined) throw new Error("MediaSession API isn't supported by your browser");
-
-const AVAILABLE_COVERS = [30, 50, 80, 100, 200, 300, 400].map((size) => `${size}x${size}`);
-
-function generateArtwork(url: string): MediaImage[] {
-    return AVAILABLE_COVERS.map((size) => ({
-        sizes: size,
-        src: url.replace("%%", size)
-    }));
+if (navigator.mediaSession === undefined) {
+    throw new Error("MediaSession API is not supported by your browser");
 }
 
-let lastNotification: Notification | null = null;
+// Ensure that mediaSession is defined inside functions
+const { mediaSession } = navigator;
 
-function updateTrack(track?: TrackInfo): void {
-    if (navigator.mediaSession === undefined) throw new Error("MediaSession API isn't supported by your browser");
-
-    if (track === undefined) {
-        navigator.mediaSession.metadata = null;
+function updateTrack(track?: TrackInfo | null): void {
+    if (isNull(track)) {
+        mediaSession.metadata = null;
 
         return;
     }
 
-    const title = track.title + (track.version !== undefined ? ` (${track.version})` : ""),
-        artist = track.artists.map((artist) => artist.title).join(", "),
-        cover = track.cover !== undefined ? generateArtwork(`https://${track.cover}`) : undefined;
+    const album = getAlbum(track),
+        artist = getArtist(track),
+        artwork = getArtwork(track),
+        icon = getIcon(artwork),
+        title = getTitle(track);
 
-    navigator.mediaSession.metadata = new MediaMetadata({
-        title,
-        album: track.album?.title,
-        artist: artist === "" ? track.album?.title : artist,
-        artwork: cover
+    mediaSession.metadata = new MediaMetadata({ album, artist, artwork, title });
+
+    sendNotification(title, {
+        icon,
+        body: artist,
+        silent: true
     });
-
-    if (Notification.permission === "granted") {
-        if (lastNotification !== null) lastNotification.close();
-
-        lastNotification = new Notification(title, {
-            body: artist === "" ? track.album?.title : artist,
-            icon: cover !== undefined ? cover[4].src : undefined,
-            silent: true
-        });
-
-        lastNotification.onclick = () => {
-            window.focus();
-        };
-    }
 }
 
-if (Notification.permission === "default") Notification.requestPermission();
-
-window.addEventListener("beforeunload", () => {
-    if (lastNotification !== null) lastNotification.close();
-});
+initNotifications();
 
 externalAPI.on(externalAPI.EVENT_TRACK, () => updateTrack(externalAPI.getCurrentTrack()));
 
-navigator.mediaSession.setActionHandler("play", () => externalAPI.togglePause(false));
-navigator.mediaSession.setActionHandler("pause", () => externalAPI.togglePause(true));
-navigator.mediaSession.setActionHandler("previoustrack", () => externalAPI.prev());
-navigator.mediaSession.setActionHandler("nexttrack", () => externalAPI.next());
+mediaSession.setActionHandler("play", () => externalAPI.togglePause(false));
+mediaSession.setActionHandler("pause", () => externalAPI.togglePause(true));
+mediaSession.setActionHandler("previoustrack", () => externalAPI.prev());
+mediaSession.setActionHandler("nexttrack", () => externalAPI.next());
 
 console.log("YaMusic extension loaded!");
