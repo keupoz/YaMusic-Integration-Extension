@@ -27,13 +27,7 @@ function getArtist(track: TrackInfo) {
         return track.album.title;
     }
 
-    let result = "";
-
-    for (const artist of track.artists) {
-        result += `, ${artist.title}`;
-    }
-
-    return result;
+    return track.artists.map((artist) => artist.title).join(", ");
 }
 
 function getArtwork(track: TrackInfo): MediaImage[] | undefined {
