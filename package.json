@@ -1,43 +1,29 @@
 {
-    "name": "ya-music-ext",
-    "version": "1.2.1",
-    "description": "Yandex.Music Extension source package",
-    "private": true,
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "gulp dev",
-        "build": "gulp build"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/keupoz/YaMusic-Integration-Extension.git"
-    },
-    "author": "keupoz",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/keupoz/YaMusic-Integration-Extension/issues"
-    },
-    "homepage": "https://github.com/keupoz/YaMusic-Integration-Extension#readme",
-    "devDependencies": {
-        "@keupoz/typescript-config": "^1.2.0",
-        "@rollup/plugin-typescript": "^8.2.1",
-        "@types/chrome": "^0.0.135",
-        "@types/gulp": "^4.0.8",
-        "@types/gulp-zip": "^4.0.1",
-        "@types/through2": "^2.0.36",
-        "@types/vinyl": "^2.0.4",
-        "@types/wicg-mediasession": "^1.1.0",
-        "del": "^6.0.0",
-        "glob": "^7.1.6",
-        "gulp": "^4.0.2",
-        "gulp-if": "^3.0.0",
-        "gulp-zip": "^5.1.0",
-        "plugin-error": "^1.0.1",
-        "rollup": "^2.45.2",
-        "rollup-plugin-terser": "^7.0.2",
-        "through2": "^4.0.2",
-        "tslint": "^6.1.3",
-        "typescript": "^4.2.4",
-        "vinyl": "^2.2.1"
-    }
+  "name": "ya-music-ext",
+  "version": "1.2.1",
+  "description": "Yandex.Music Extension",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keupoz/YaMusic-Integration-Extension.git"
+  },
+  "author": "keupoz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/keupoz/YaMusic-Integration-Extension/issues"
+  },
+  "homepage": "https://github.com/keupoz/YaMusic-Integration-Extension#readme",
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^1.0.13",
+    "@types/chrome": "^0.0.193",
+    "ts-standard": "^11.0.0",
+    "typescript": "^4.6.4",
+    "vite": "^3.0.0"
+  }
 }

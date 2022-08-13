@@ -1,7 +1,10 @@
-const internalScript = document.createElement("script");
+import mainSrc from './main?script&module'
 
-internalScript.id = "kYaMusicHelper349";
-internalScript.setAttribute("data-ext-id", chrome.runtime.id);
-internalScript.src = chrome.runtime.getURL("main.js");
+const internalScript = document.createElement('script')
 
-document.body.appendChild(internalScript);
+internalScript.id = 'kYaMusicHelper349'
+internalScript.setAttribute('data-ext-id', chrome.runtime.id)
+internalScript.type = 'module'
+internalScript.src = chrome.runtime.getURL(mainSrc)
+
+document.body.appendChild(internalScript)
