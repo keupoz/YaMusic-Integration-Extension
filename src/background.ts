@@ -10,8 +10,13 @@ chrome.action.onClicked.addListener(() => {
         });
       }
 
-      return await chrome.tabs.update(result.id, {
-        active: true,
-      });
+      return Promise.all([
+        chrome.windows.update(result.windowId, {
+          focused: true,
+        }),
+        chrome.tabs.update(result.id, {
+          active: true,
+        }),
+      ]);
     });
 });
