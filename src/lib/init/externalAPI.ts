@@ -1,53 +1,53 @@
-import { isNull } from '../utils/common'
-import { parseTrackInfo } from '../utils/tracks'
-import { sendNotification } from './notifications'
+import { isNull } from "../utils/common";
+import { parseTrackInfo } from "../utils/tracks";
+import { sendNotification } from "./notifications";
 
-export function initExternalAPI (mediaSession: MediaSession): void {
-  function updateTrack (): void {
-    const track = externalAPI.getCurrentTrack()
+export function initExternalAPI(mediaSession: MediaSession): void {
+  function updateTrack(): void {
+    const track = externalAPI.getCurrentTrack();
 
     if (isNull(track)) {
-      mediaSession.metadata = null
+      mediaSession.metadata = null;
     } else {
-      const parsedTrack = parseTrackInfo(track)
+      const parsedTrack = parseTrackInfo(track);
 
-      mediaSession.metadata = new MediaMetadata(parsedTrack)
+      mediaSession.metadata = new MediaMetadata(parsedTrack);
 
-      sendNotification(parsedTrack.title ?? 'No title', {
+      sendNotification(parsedTrack.title ?? "No title", {
         icon: parsedTrack.icon,
         body: parsedTrack.artist,
-        silent: true
-      })
+        silent: true,
+      });
     }
   }
 
-  function updatePlayback (): void {
-    mediaSession.playbackState = getPlaybackState()
+  function updatePlayback(): void {
+    mediaSession.playbackState = getPlaybackState();
   }
 
-  function updatePositionState (): void {
-    const progress = externalAPI.getProgress()
+  function updatePositionState(): void {
+    const progress = externalAPI.getProgress();
 
     mediaSession.setPositionState({
       duration: progress.duration,
       playbackRate: externalAPI.getSpeed(),
-      position: progress.position
-    })
+      position: progress.position,
+    });
   }
 
-  externalAPI.on(externalAPI.EVENT_TRACK, updateTrack)
-  externalAPI.on(externalAPI.EVENT_STATE, updatePlayback)
+  externalAPI.on(externalAPI.EVENT_TRACK, updateTrack);
+  externalAPI.on(externalAPI.EVENT_STATE, updatePlayback);
 
-  externalAPI.on(externalAPI.EVENT_SPEED, updatePositionState)
-  externalAPI.on(externalAPI.EVENT_PROGRESS, updatePositionState)
+  externalAPI.on(externalAPI.EVENT_SPEED, updatePositionState);
+  externalAPI.on(externalAPI.EVENT_PROGRESS, updatePositionState);
 }
 
-function getPlaybackState (): MediaSessionPlaybackState {
-  const track = externalAPI.getCurrentTrack()
+function getPlaybackState(): MediaSessionPlaybackState {
+  const track = externalAPI.getCurrentTrack();
 
-  if (isNull(track)) return 'none'
+  if (isNull(track)) return "none";
 
-  if (externalAPI.isPlaying()) return 'playing'
+  if (externalAPI.isPlaying()) return "playing";
 
-  return 'paused'
+  return "paused";
 }

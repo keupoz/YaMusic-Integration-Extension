@@ -1,8 +1,8 @@
 {
-    "extDesc": {
-        "message": "This extension adds integration with system media player to Yandex.Music"
-    },
-    "browserActionTitle": {
-        "message": "Click to open/switch to Yandex.Music tab"
-    }
+  "extDesc": {
+    "message": "This extension adds integration with system media player to Yandex.Music"
+  },
+  "browserActionTitle": {
+    "message": "Click to open/switch to Yandex.Music tab"
+  }
 }
