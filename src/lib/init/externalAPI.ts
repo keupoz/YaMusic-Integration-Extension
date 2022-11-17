@@ -6,9 +6,7 @@ export function initExternalAPI(mediaSession: MediaSession): void {
   function updateTrack(): void {
     const track = externalAPI.getCurrentTrack();
 
-    if (isNull(track)) {
-      mediaSession.metadata = null;
-    } else {
+    if (!isNull(track)) {
       const parsedTrack = parseTrackInfo(track);
 
       mediaSession.metadata = new MediaMetadata(parsedTrack);
@@ -40,6 +38,10 @@ export function initExternalAPI(mediaSession: MediaSession): void {
 
   externalAPI.on(externalAPI.EVENT_SPEED, updatePositionState);
   externalAPI.on(externalAPI.EVENT_PROGRESS, updatePositionState);
+
+  window.addEventListener("beforeunload", () => {
+    externalAPI.togglePause(true);
+  });
 }
 
 function getPlaybackState(): MediaSessionPlaybackState {
